@@ -1,0 +1,116 @@
+---
+title: "A quick guide of mstknnclust package"
+author: "Mario Inostroza-Ponta (mario.inostroza@usach.cl), Jorge Parraga-Alava (jorge.parraga@usach.cl), Pablo Moscato (pablo.moscato@newcastle.edu.au)"
+date: "`r format(Sys.time(), '%d %b %Y')`"
+output:
+  rmarkdown::html_vignette:
+    toc: true
+    keep_md: true
+    
+vignette: >
+  %\VignetteIndexEntry{A quick guide of mstknnclust package}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8](inputenc)
+bibliography: bibliography.bib
+---
+
+## Introduction
+
+Clustering is a common data mining task commonly used to reveal structures hidden in large data sets. The clustering problem consists of finding groups of objects, such that objects that are in the same group are similar and objects in different groups are dissimilar. Clustering algorithms can be classified according to different parameters. One particular type of algorithms that can be distinguished is the **graph-based clustering**. In the graph-based clustering algorithms, the data set can be modeled as a graph. In such a graph, a *node* represents an object of the data set, an  *edge* a link between pairs of nodes. Each edge has a *costs* that corresponds to the distance between two nodes, calculated using a chosen distance measure.
+
+One of the clustering algorithms within the *graph-based* approach is the **MST-kNN** [@mario]. It uses two proximity graphs: *minimum spanning tree (MST)* and *k nearest neighbor (kNN)*. They can model the data and highlight the more important relationships between the objects of the data. MST-kNN requires minimal user intervention due to the automatic selection of the number of clusters. Such a situation is adequate in scenarios where the structure of the data is unknown.
+
+This document gives a quick guide of the `mstknnclust` package (version 0.3.1). It corresponds to the implementation of the MST-kNN clustering algorithm. For further details to see `help(package="mstknnclust")`. If you use this R package do not forget to include the references provided by `citation("mstknnclust")`.
+
+
+## How does MST-kNN clustering works?
+
+The MST-kNN clustering algorithm is based on the *intersection* of the edges of two proximity graphs: **MST** and **kNN**. The *intersection* operation conserves only those edges between two nodes that are reciprocal in both proximity graphs. After the first application of the algorithm, a graph with one or more connected components (*cc*) is generated. MST-kNN algorithm is recursively applied in each component until the number of *cc* obtained is one.
+
+The algorithm requires a **distance matrix** *d* as input containing the distance between *n* objects. Then, the next steps are performed:
+
+1. Computes a **complete graph (CG)** that represents the data, with one *node* per object, one *edge* for each pair of objects, and the *cost* of the edge equal to the distance between the objects obtained from distance matrix *d*.
+2. Computes the **MST** graph through Prim's algorithm [@prim] and using the **complete graph** as input.
+3. Computes the **kNN** graph using the **complete graph** as input and determining the value of *k* according to:
+ 
+\begin{equation}
+k= \min \bigg\{ \lfloor \ln(n)\rfloor ; \min k \mid \text{kNN graph is connected} \bigg\}
+\end{equation}
+
+4. Performs the **intersection** of the edges of the MST and kNN graphs. It will produce a graph with $cc\geq1$ connected components 
+5. Evaluates the numbers of connected components (cc) in the graph produced. If $cc=1$ the algorithm stops. If $cc>1$, the steps 1-4 are recursively applied in each of the connected components of the graph. 
+6. Finally, when the algorithm stops in step 5 in any recursion, it performs the **union** of the graphs produced by the application of the MST-kNN algorithm in each recursion.
+
+
+## Installation instructions
+
+The **mstknnclust** package requires **igraph** package to work and to visualize some graphs as networks. This package is included as a mandatory dependency, so users who install the mstknnclust package will have them automatically. To install the `mstknnclust` package use `install.packages("mstknnclust")`.
+
+
+
+
+## Example on Indo-European languages data set
+
+### Load package
+
+```{r}
+#loads package
+library("mstknnclust")
+```
+
+### Load example data
+```{r}
+#loads dataset
+data(dslanguages)
+```
+
+```{r, echo=FALSE}
+knitr::kable(dslanguages[1:6,1:6],digits=6,row.names=TRUE, caption = "Distance between first six objects to group")
+```
+
+ 
+
+
+### Performing MST-kNN clustering algorithm
+
+```{r}
+#Performs MST-kNN clustering using languagesds distance matrix
+results <- mst.knn(dslanguages)
+```
+
+#### Getting the results
+The function `mst.knn` returns a list with the elements:
+
+1. **cnumber**: A numeric value representing the number of clusters of the solution.
+2. **cluster**: A named vector of integers from *1:cnumber* representing the cluster to which each object is assigned.
+3. **partition**: A partition matrix order by cluster where are shown the objects and the cluster where they are assigned.
+4. **csize**: A vector with the cardinality of each cluster in the solution.
+5. **network**: An object of class "igraph" as a network representing the clustering solution.
+
+```{r, echo=FALSE}
+cat("Number of clusters: ", results$k , "\n")
+cat("Objects by cluster: ", results$csize, "\n")
+cat("Named vector of cluster allocation: \n")
+results$cluster
+cat("Data matrix partition (partial): \n")
+knitr::kable(tail(results$partition,10), row.names = FALSE) 
+```
+
+#### Visualizing clustering
+The clustering solutions can be shown as a network where clusters are identified by colors. To perform the visualization we need the R package **igraph** [@igraph].
+
+```{r, fig.align = "center", fig.height = 7, fig.width = 7}
+library("igraph")
+igraph::V(results$network)$label.cex <- seq(0.6,0.6,length.out=2)
+
+plot(results$network, vertex.size=8, 
+     vertex.color=igraph::clusters(results$network)$membership, 
+     layout=igraph::layout.fruchterman.reingold(results$network, niter=10000),
+     main=paste("MST-kNN \n Clustering solution \n Number of clusters=",results$cnumber,sep="" ))
+```
+ 
+
+           
+
+
+## References
