@@ -114,7 +114,7 @@ The algorithm has been applied in peer-reviewed publications across three domain
 If you use this package, please cite:
 
 ```
-Parraga-Alava J, Inostroza-Ponta M, Moscato P (2025).
+Parraga-Alava J, Inostroza-Ponta M, Moscato P (2026).
 mstknnclust: An R Package for Graph-Based Clustering via MST-kNN Intersection.
 Software Impacts. https://doi.org/10.1016/j.simpa.2025.xxxxxx
 ```
