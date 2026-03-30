@@ -1,8 +1,8 @@
 Package: mstknnclust
 Type: Package
 Title: MST-kNN Clustering Algorithm
-Version: 0.3.1
-Date: 2020-09-05
+Version: 0.3.2
+Date: 2023-23-01
 Authors@R: c(person("Jorge Parraga-Alava", email = "jorge.parraga@usach.cl", role = c("aut", "cre")), person("Pablo Moscato", email = "pablo.moscato@newcastle.edu.au", role=c("aut")), person("Mario Inostroza-Ponta", email = "mario.inostroza@usach.cl", role = c("aut")))
 Author: Jorge Parraga-Alava [aut, cre], Pablo Moscato [aut], Mario Inostroza-Ponta [aut]
 Maintainer: Jorge Parraga-Alava <jorge.parraga@usach.cl>
