@@ -1,0 +1,15 @@
+^\.Rproj\.user$
+^.*\.Rproj$
+^\.Rhistory$
+^\.RData$
+^\.Rprofile$
+^doc$
+^Meta$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
+^\.github$
+^README\.Rmd$
+^benchmark_results\.csv$
+^benchmark_time_plot\.pdf$
+^__MACOSX$

@@ -1,0 +1,22 @@
+url: https://jorgeklz.github.io/package-mstknnclust/
+
+template:
+  bootstrap: 5
+
+reference:
+  - title: Clustering
+    desc: Main clustering function
+    contents:
+      - mst.knn
+
+  - title: Utilities
+    desc: Helper functions
+    contents:
+      - generate.results
+      - only.single.graphs
+
+  - title: Datasets
+    desc: Bundled example datasets
+    contents:
+      - dslanguages
+      - dsyeastexpression
